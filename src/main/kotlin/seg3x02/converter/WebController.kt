@@ -9,11 +9,13 @@ import org.springframework.web.bind.annotation.RequestParam
 
 @Controller
 class WebController {
+
     @ModelAttribute
     fun addAttributes(model: Model) {
         model.addAttribute("error", "")
-        model.addAttribute("celsius", "")
-        model.addAttribute("fahrenheit", "")
+        model.addAttribute("firstNumber", "")
+        model.addAttribute("secondNumber", "")
+        model.addAttribute("result", "")
     }
 
     @RequestMapping("/")
@@ -21,44 +23,49 @@ class WebController {
         return "home"
     }
 
-    @GetMapping(value = ["/convert"])
-    fun doConvert(
-        @RequestParam(value = "celsius", required = false) celsius: String,
-        @RequestParam(value = "fahrenheit", required = false) fahrenheit: String,
+    @GetMapping(value = ["/calculate"])
+    fun calculate(
+        @RequestParam(value = "firstNumber", required = false) firstNumber: String,
+        @RequestParam(value = "secondNumber", required = false) secondNumber: String,
         @RequestParam(value = "operation", required = false) operation: String,
         model: Model
     ): String {
-        var celsiusVal: Double
-        var fahrenheitVal: Double
-        when (operation) {
-            "CtoF" ->
-                try {
-                    celsiusVal = celsius.toDouble()
-                    fahrenheitVal = ((celsiusVal * 9) / 5 + 32)
-                    model.addAttribute("celsius", celsius)
-                    model.addAttribute("fahrenheit", String.format("%.2f", fahrenheitVal))
-                } catch (exp: NumberFormatException) {
-                    model.addAttribute("error", "CelsiusFormatError")
-                    model.addAttribute("celsius", celsius)
-                    model.addAttribute("fahrenheit", fahrenheit)
+
+        try {
+            val first = firstNumber.toDouble()
+            val second = secondNumber.toDouble()
+
+            val result = when (operation) {
+                "+" -> first + second
+                "-" -> first - second
+                "*" -> first * second
+                "/" -> {
+                    if (second == 0.0) {
+                        model.addAttribute("error", "DivisionByZeroError")
+                        null
+                    } else {
+                        first / second
+                    }
                 }
-            "FtoC" ->
-                try {
-                    fahrenheitVal = fahrenheit.toDouble()
-                    celsiusVal = ((fahrenheitVal - 32) * 5) / 9
-                    model.addAttribute("celsius", String.format("%.2f", celsiusVal))
-                    model.addAttribute("fahrenheit", fahrenheit)
-                } catch (exp: NumberFormatException) {
-                    model.addAttribute("error", "FahrenheitFormatError")
-                    model.addAttribute("celsius", celsius)
-                    model.addAttribute("fahrenheit", fahrenheit)
+                else -> {
+                    model.addAttribute("error", "OperationFormatError")
+                    null
                 }
-            else -> {
-                model.addAttribute("error", "OperationFormatError")
-                model.addAttribute("celsius", celsius)
-                model.addAttribute("fahrenheit", fahrenheit)
             }
+
+            model.addAttribute("firstNumber", firstNumber)
+            model.addAttribute("secondNumber", secondNumber)
+
+            if (result != null) {
+                model.addAttribute("result", result)
+            }
+
+        } catch (exp: NumberFormatException) {
+            model.addAttribute("error", "NumberFormatError")
+            model.addAttribute("firstNumber", firstNumber)
+            model.addAttribute("secondNumber", secondNumber)
         }
+
         return "home"
     }
 }
