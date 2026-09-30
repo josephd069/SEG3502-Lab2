@@ -32,3 +32,30 @@ p {
     color: red;
     font-weight: bold;
 }
+
+body {
+    background-color: #eef2ff;
+    font-family: Arial, sans-serif;
+}
+
+h1 {
+    background-color: transparent;
+    color: #1e3a8a;
+    font-family: Arial, sans-serif;
+}
+
+input {
+    border: 1px solid #94a3b8;
+    border-radius: 8px;
+    padding: 8px;
+}
+
+button {
+    background-color: #1e40af;
+    border: none;
+    border-radius: 10px;
+}
+
+button:hover {
+    background-color: #1e3a8a;
+}
