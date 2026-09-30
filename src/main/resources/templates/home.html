@@ -5,117 +5,118 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Calculator</title>
     <style>
-        * {
-            box-sizing: border-box;
-        }
+    * {
+        box-sizing: border-box;
+    }
 
-        body {
-            margin: 0;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: #eef2ff;
-            font-family: Arial, sans-serif;
-            padding: 20px;
-        }
+    body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        background: #f1f3f5;
+        font-family: Arial, sans-serif;
+    }
 
-        .calculator {
-            width: 340px;
-            max-width: 100%;
-            background: #1e293b;
-            padding: 24px;
-            border-radius: 22px;
-            box-shadow: 0 16px 40px #00000030;
-        }
+    .calculator {
+        width: 294px;
+        max-width: 100%;
+        padding: 18px;
+        background: #222629;
+        border-radius: 14px;
+        box-shadow: 0 12px 24px #00000040;
+    }
 
-        h1 {
-            margin: 0 0 20px;
-            color: white;
-            text-align: center;
-            font-size: 24px;
-        }
+    h1 {
+        margin: 0 0 14px;
+        color: #ffffff;
+        text-align: center;
+        font-size: 22px;
+    }
 
-        .screen {
-            background: #f8fafc;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 20px;
-            text-align: right;
-        }
+    .screen {
+        margin-bottom: 14px;
+        padding: 12px;
+        background: #101419;
+        border-radius: 8px;
+        text-align: right;
+    }
 
-        .expression {
-            min-height: 20px;
-            color: #64748b;
-            font-size: 14px;
-            overflow-wrap: anywhere;
-        }
+    .expression {
+        color: #aeb6bf;
+        font-size: 12px;
+        overflow-wrap: anywhere;
+    }
 
-        #display {
-            display: block;
-            width: 100%;
-            margin-top: 8px;
-            color: #0f172a;
-            font-size: 34px;
-            overflow-wrap: anywhere;
-        }
+    .expression:empty {
+        display: none;
+    }
 
-        .keys {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-        }
+    #display {
+        display: block;
+        color: #ffffff;
+        font-size: 26px;
+        overflow-wrap: anywhere;
+    }
 
-        button {
-            min-height: 58px;
-            border: none;
-            border-radius: 12px;
-            background: #334155;
-            color: white;
-            font-size: 23px;
-            cursor: pointer;
-        }
+    .keys {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(5, 44px);
+        gap: 8px;
+    }
 
-        button:hover {
-            filter: brightness(1.2);
-        }
+    button {
+        padding: 0;
+        border: none;
+        border-radius: 8px;
+        background: #e5e7eb;
+        color: #222629;
+        font-size: 20px;
+        font-weight: bold;
+        cursor: pointer;
+    }
 
-        button:focus-visible {
-            outline: 3px solid #93c5fd;
-            outline-offset: 2px;
-        }
+    button:hover {
+        filter: brightness(0.92);
+    }
 
-        .operation {
-            background: #2563eb;
-        }
+    button:focus-visible {
+        outline: 3px solid #ffffff;
+        outline-offset: 2px;
+    }
 
-        .clear {
-            background: #dc2626;
-        }
+    .utility {
+        background: #bbc1c7;
+    }
 
-        .utility {
-            background: #475569;
-        }
+    .operation,
+    .equals {
+        background: #f5b454;
+        color: #ffffff;
+    }
 
-        .equals {
-            background: #16a34a;
-            grid-column: span 2;
-        }
+    .equals {
+        grid-column: 4;
+        grid-row: 4 / span 2;
+    }
 
-        .zero {
-            grid-column: span 2;
-        }
+    .zero {
+        grid-column: span 2;
+    }
 
-        .error {
-            margin: 16px 0 0;
-            color: #fecaca;
-            text-align: center;
-            font-size: 14px;
-        }
+    .error {
+        margin: 12px 0 0;
+        color: #fecaca;
+        text-align: center;
+        font-size: 13px;
+    }
 
-        .error:empty {
-            display: none;
-        }
+    .error:empty {
+        display: none;
+    }
     </style>
 </head>
 <body>
@@ -137,38 +138,33 @@
             <input type="hidden" id="operation" name="operation">
 
             <div class="keys">
-                <button type="button" class="clear" id="clear">C</button>
+                <button type="button" class="utility" id="clear">C</button>
                 <button type="button" class="utility" id="backspace"
                         aria-label="Delete last digit">⌫</button>
-                <button type="button" class="utility" id="sign"
-                        aria-label="Change sign">±</button>
                 <button type="button" class="operation"
                         data-operation="/" aria-label="Divide">÷</button>
+                <button type="button" class="operation"
+                        data-operation="*" aria-label="Multiply">×</button>
 
                 <button type="button" data-digit="7">7</button>
                 <button type="button" data-digit="8">8</button>
                 <button type="button" data-digit="9">9</button>
                 <button type="button" class="operation"
-                        data-operation="*" aria-label="Multiply">×</button>
+                        data-operation="-" aria-label="Subtract">−</button>
 
                 <button type="button" data-digit="4">4</button>
                 <button type="button" data-digit="5">5</button>
                 <button type="button" data-digit="6">6</button>
                 <button type="button" class="operation"
-                        data-operation="-" aria-label="Subtract">−</button>
+                        data-operation="+" aria-label="Add">+</button>
 
                 <button type="button" data-digit="1">1</button>
                 <button type="button" data-digit="2">2</button>
                 <button type="button" data-digit="3">3</button>
-                <button type="button" class="operation"
-                        data-operation="+" aria-label="Add">+</button>
+                <button type="submit" class="equals">=</button>
 
                 <button type="button" class="zero" data-digit="0">0</button>
                 <button type="button" id="decimal">.</button>
-                <button type="button" class="utility" id="resetEntry"
-                        aria-label="Clear current entry">CE</button>
-
-                <button type="submit" class="equals">=</button>
             </div>
         </form>
 
