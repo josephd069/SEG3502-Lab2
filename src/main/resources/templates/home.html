@@ -184,18 +184,18 @@
         const operationInput = document.getElementById("operation");
         const error = document.getElementById("error");
 
-        let current = display.textContent.trim() || "0";
-        let first = "";
-        let operation = "";
-        let waitingForSecond = false;
-        let freshResult = firstInput.value !== "";
-
         const symbols = {
             "+": "+",
             "-": "−",
             "*": "×",
             "/": "÷"
         };
+
+        let current = display.textContent.trim() || "0";
+        let first = "";
+        let operation = "";
+        let waitingForSecond = false;
+        let freshResult = firstInput.value !== "";
 
         function updateDisplay() {
             display.textContent = current;
@@ -235,13 +235,17 @@
 
         document.querySelectorAll("[data-operation]").forEach(button => {
             button.addEventListener("click", () => {
+                error.textContent = "";
+
                 if (operation && !waitingForSecond) {
                     error.textContent = "Press = before choosing another operation.";
                     return;
                 }
 
-                error.textContent = "";
-                first = current;
+                if (!operation) {
+                    first = current;
+                }
+
                 operation = button.dataset.operation;
                 waitingForSecond = true;
                 freshResult = false;
@@ -255,14 +259,10 @@
             operation = "";
             waitingForSecond = false;
             freshResult = false;
+            firstInput.value = "";
+            secondInput.value = "";
+            operationInput.value = "";
             error.textContent = "";
-            form.reset();
-            updateDisplay();
-        });
-
-        document.getElementById("resetEntry").addEventListener("click", () => {
-            prepareEntry();
-            current = "0";
             updateDisplay();
         });
 
@@ -277,27 +277,21 @@
             updateDisplay();
         });
 
-        document.getElementById("sign").addEventListener("click", () => {
-            if (waitingForSecond) {
-                prepareEntry();
-            }
-
-            freshResult = false;
-            error.textContent = "";
-
-            if (Number(current) !== 0) {
-                current = current.startsWith("-")
-                    ? current.slice(1)
-                    : "-" + current;
-            }
-
-            updateDisplay();
-        });
-
         form.addEventListener("submit", event => {
             if (!operation || waitingForSecond) {
                 event.preventDefault();
                 error.textContent = "Enter two numbers and choose an operation.";
+                return;
+            }
+
+            if (
+                first.trim() === "" ||
+                current.trim() === "" ||
+                !Number.isFinite(Number(first)) ||
+                !Number.isFinite(Number(current))
+            ) {
+                event.preventDefault();
+                error.textContent = "Please enter valid numbers.";
                 return;
             }
 
