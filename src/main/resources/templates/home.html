@@ -1,76 +1,324 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-
 <head>
     <meta charset="UTF-8">
-    <title>Basic Calculator</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Calculator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #eef2ff;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .calculator {
+            width: 340px;
+            max-width: 100%;
+            background: #1e293b;
+            padding: 24px;
+            border-radius: 22px;
+            box-shadow: 0 16px 40px #00000030;
+        }
+
+        h1 {
+            margin: 0 0 20px;
+            color: white;
+            text-align: center;
+            font-size: 24px;
+        }
+
+        .screen {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        .expression {
+            min-height: 20px;
+            color: #64748b;
+            font-size: 14px;
+            overflow-wrap: anywhere;
+        }
+
+        #display {
+            display: block;
+            width: 100%;
+            margin-top: 8px;
+            color: #0f172a;
+            font-size: 34px;
+            overflow-wrap: anywhere;
+        }
+
+        .keys {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        button {
+            min-height: 58px;
+            border: none;
+            border-radius: 12px;
+            background: #334155;
+            color: white;
+            font-size: 23px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            filter: brightness(1.2);
+        }
+
+        button:focus-visible {
+            outline: 3px solid #93c5fd;
+            outline-offset: 2px;
+        }
+
+        .operation {
+            background: #2563eb;
+        }
+
+        .clear {
+            background: #dc2626;
+        }
+
+        .utility {
+            background: #475569;
+        }
+
+        .equals {
+            background: #16a34a;
+            grid-column: span 2;
+        }
+
+        .zero {
+            grid-column: span 2;
+        }
+
+        .error {
+            margin: 16px 0 0;
+            color: #fecaca;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .error:empty {
+            display: none;
+        }
+    </style>
 </head>
-
 <body>
-    <div>
-        <h1>Basic Calculator</h1>
+    <main class="calculator">
+        <h1>Calculator</h1>
 
-        <div th:switch="${error}">
-            <p th:case="'NumberFormatError'">
-                Please enter valid numbers.
-            </p>
-
-            <p th:case="'OperationFormatError'">
-                Please select a valid operation.
-            </p>
-
-            <p th:case="'DivisionByZeroError'">
-                Cannot divide by zero.
-            </p>
+        <div class="screen">
+            <div id="expression" class="expression"></div>
+            <output id="display"
+                    aria-live="polite"
+                    th:text="${result != '' ? result : '0'}">0</output>
         </div>
 
-        <form th:action="@{/calculate}" method="get">
-            <table>
+        <form id="calculatorForm" th:action="@{/calculate}" method="get">
+            <input type="hidden" id="firstNumber" name="firstNumber"
+                   th:value="${firstNumber}">
+            <input type="hidden" id="secondNumber" name="secondNumber"
+                   th:value="${secondNumber}">
+            <input type="hidden" id="operation" name="operation">
 
-                <tr>
-                    <td>
-                        <label for="firstNumber">First Number:</label>
-                    </td>
+            <div class="keys">
+                <button type="button" class="clear" id="clear">C</button>
+                <button type="button" class="utility" id="backspace"
+                        aria-label="Delete last digit">⌫</button>
+                <button type="button" class="utility" id="sign"
+                        aria-label="Change sign">±</button>
+                <button type="button" class="operation"
+                        data-operation="/" aria-label="Divide">÷</button>
 
-                    <td>
-                        <input name="firstNumber" id="firstNumber" th:value="${firstNumber}">
-                    </td>
-                </tr>
+                <button type="button" data-digit="7">7</button>
+                <button type="button" data-digit="8">8</button>
+                <button type="button" data-digit="9">9</button>
+                <button type="button" class="operation"
+                        data-operation="*" aria-label="Multiply">×</button>
 
-                <tr>
-                    <td>
-                        <label for="secondNumber">Second Number:</label>
-                    </td>
+                <button type="button" data-digit="4">4</button>
+                <button type="button" data-digit="5">5</button>
+                <button type="button" data-digit="6">6</button>
+                <button type="button" class="operation"
+                        data-operation="-" aria-label="Subtract">−</button>
 
-                    <td>
-                        <input name="secondNumber" id="secondNumber" th:value="${secondNumber}">
-                    </td>
-                </tr>
+                <button type="button" data-digit="1">1</button>
+                <button type="button" data-digit="2">2</button>
+                <button type="button" data-digit="3">3</button>
+                <button type="button" class="operation"
+                        data-operation="+" aria-label="Add">+</button>
 
-                <tr>
-                    <td colspan="2">
-                        <button type="submit" name="operation" value="+">+</button>
-                        <button type="submit" name="operation" value="-">-</button>
-                        <button type="submit" name="operation" value="*">*</button>
-                        <button type="submit" name="operation" value="/">/</button>
-                    </td>
-                </tr>
+                <button type="button" class="zero" data-digit="0">0</button>
+                <button type="button" id="decimal">.</button>
+                <button type="button" class="utility" id="resetEntry"
+                        aria-label="Clear current entry">CE</button>
 
-                <tr>
-                    <td>
-                        <label>Result:</label>
-                    </td>
-
-                    <td>
-                        <span th:text="${result}"></span>
-                    </td>
-                </tr>
-
-            </table>
+                <button type="submit" class="equals">=</button>
+            </div>
         </form>
 
-    </div>
-</body>
+        <div class="error" id="error" role="alert" th:switch="${error}">
+            <span th:case="'NumberFormatError'">Please enter valid numbers.</span>
+            <span th:case="'OperationFormatError'">Please select a valid operation.</span>
+            <span th:case="'DivisionByZeroError'">Cannot divide by zero.</span>
+        </div>
+    </main>
 
+    <script>
+        const display = document.getElementById("display");
+        const expression = document.getElementById("expression");
+        const form = document.getElementById("calculatorForm");
+        const firstInput = document.getElementById("firstNumber");
+        const secondInput = document.getElementById("secondNumber");
+        const operationInput = document.getElementById("operation");
+        const error = document.getElementById("error");
+
+        let current = display.textContent.trim() || "0";
+        let first = "";
+        let operation = "";
+        let waitingForSecond = false;
+        let freshResult = firstInput.value !== "";
+
+        const symbols = {
+            "+": "+",
+            "-": "−",
+            "*": "×",
+            "/": "÷"
+        };
+
+        function updateDisplay() {
+            display.textContent = current;
+            expression.textContent = operation
+                ? `${first} ${symbols[operation]}`
+                : "";
+        }
+
+        function prepareEntry() {
+            error.textContent = "";
+
+            if (waitingForSecond || freshResult) {
+                current = "0";
+                waitingForSecond = false;
+                freshResult = false;
+            }
+        }
+
+        document.querySelectorAll("[data-digit]").forEach(button => {
+            button.addEventListener("click", () => {
+                prepareEntry();
+                const digit = button.dataset.digit;
+                current = current === "0" ? digit : current + digit;
+                updateDisplay();
+            });
+        });
+
+        document.getElementById("decimal").addEventListener("click", () => {
+            prepareEntry();
+
+            if (!current.includes(".")) {
+                current += ".";
+            }
+
+            updateDisplay();
+        });
+
+        document.querySelectorAll("[data-operation]").forEach(button => {
+            button.addEventListener("click", () => {
+                if (operation && !waitingForSecond) {
+                    error.textContent = "Press = before choosing another operation.";
+                    return;
+                }
+
+                error.textContent = "";
+                first = current;
+                operation = button.dataset.operation;
+                waitingForSecond = true;
+                freshResult = false;
+                updateDisplay();
+            });
+        });
+
+        document.getElementById("clear").addEventListener("click", () => {
+            current = "0";
+            first = "";
+            operation = "";
+            waitingForSecond = false;
+            freshResult = false;
+            error.textContent = "";
+            form.reset();
+            updateDisplay();
+        });
+
+        document.getElementById("resetEntry").addEventListener("click", () => {
+            prepareEntry();
+            current = "0";
+            updateDisplay();
+        });
+
+        document.getElementById("backspace").addEventListener("click", () => {
+            prepareEntry();
+            current = current.slice(0, -1);
+
+            if (current === "" || current === "-") {
+                current = "0";
+            }
+
+            updateDisplay();
+        });
+
+        document.getElementById("sign").addEventListener("click", () => {
+            if (waitingForSecond) {
+                prepareEntry();
+            }
+
+            freshResult = false;
+            error.textContent = "";
+
+            if (Number(current) !== 0) {
+                current = current.startsWith("-")
+                    ? current.slice(1)
+                    : "-" + current;
+            }
+
+            updateDisplay();
+        });
+
+        form.addEventListener("submit", event => {
+            if (!operation || waitingForSecond) {
+                event.preventDefault();
+                error.textContent = "Enter two numbers and choose an operation.";
+                return;
+            }
+
+            firstInput.value = first;
+            secondInput.value = current;
+            operationInput.value = operation;
+        });
+
+        if (freshResult) {
+            const previousOperation = new URLSearchParams(location.search)
+                .get("operation");
+
+            if (symbols[previousOperation]) {
+                expression.textContent =
+                    `${firstInput.value} ${symbols[previousOperation]} ${secondInput.value} =`;
+            }
+        }
+    </script>
+</body>
 </html>
